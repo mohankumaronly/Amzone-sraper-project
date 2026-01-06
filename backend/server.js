@@ -25,10 +25,8 @@ app.use(cookieParser());
 
 
 app.get("/api/health", (_, res) => {
-  res.status(200).json({
-    status: "OK",
-    message: "Rockranger API is running",
-  });
+  console.log(`Health check ping received at: ${new Date().toISOString()}`);
+  res.status(200).json({ status: "ok", uptime: process.uptime() });
 });
 
 app.get("/api/test", (req, res) => {
