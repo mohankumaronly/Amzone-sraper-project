@@ -61,9 +61,12 @@ const RegisterPage = () => {
     return (
         <>
             {error && (
-                <p className="text-xs text-rose-500 bg-rose-50 p-2 rounded">
-                    {error}
-                </p>
+                <div className="flex items-start gap-2 text-rose-600 bg-rose-50/50 p-3 rounded-xl border border-rose-100 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                    <p className="text-xs font-medium leading-relaxed">
+                        {error}
+                    </p>
+                </div>
             )}
             {loading && <LoadingScreen />}
             <AuthLayout

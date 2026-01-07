@@ -11,7 +11,7 @@ const verifyEmail = require('../controllers/verifyEmail.controller');
 const authRouter = express.Router();
 authRouter.post('/register', validate(registerSchema), register);
 authRouter.post('/login', limiter, validate(loginSchema), login);
-authRouter.post('/verify-email/:token', verifyEmail);
+authRouter.get('/verify-email/:token', verifyEmail);
 authRouter.post('/refresh-token', refreshTokenController);
 authRouter.post('/forgot-password', limiter, validate(forgotPasswordSchema), forgotPassword);
 authRouter.post('/reset-password/:token', validate(resetPasswordSchema), resetPassword);
