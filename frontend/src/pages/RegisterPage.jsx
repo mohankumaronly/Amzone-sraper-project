@@ -28,12 +28,17 @@ const RegisterPage = () => {
         setFormData({ ...formData, [field]: e.target.value });
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+    }   
+
     return (
         <AuthLayout
             title="Create your account"
             subtitle="Join 500+ sellers extracting data daily."
         >
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-4" onSubmit={handleSubmit}>
 
                 <div className="grid grid-cols-2 gap-4">
                     <AuthInput
