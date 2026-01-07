@@ -10,7 +10,7 @@ const EmailVerificationScreen = () => {
         window.open('https://mail.google.com/', '_blank');
     };
 
-    return (
+    return (    
         <AuthLayout
             title="Check your email"
             subtitle="We've sent a verification link to your inbox. Please click it to activate your account."

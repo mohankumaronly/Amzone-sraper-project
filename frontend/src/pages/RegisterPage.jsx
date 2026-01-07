@@ -58,7 +58,6 @@ const RegisterPage = () => {
             setLoading(false);
         }
     };
-    
     return (
         <>
             {error && (
