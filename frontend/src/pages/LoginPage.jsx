@@ -8,7 +8,6 @@ import LoadingScreen from '../components/LoadingScreen';
 import { getMe, userLogin } from '../services/api.service';
 import { useAuth } from "../context/AuthContext";
 
-
 const LoginPage = () => {
     const navigate = useNavigate();
     const { refreshAuth } = useAuth();
@@ -22,22 +21,23 @@ const LoginPage = () => {
     const [rememberMe, setRememberMe] = useState(false);
 
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const isPasswordFilled = password.length > 0;
-    const canSubmit = isEmailValid && isPasswordFilled;
+    const canSubmit = isEmailValid && password.length > 0;
 
+    // ✅ Redirect if already logged in
     useEffect(() => {
         const checkAuth = async () => {
             try {
                 await getMe();
-                navigate("/dashboard");
+                navigate("/dashboard", { replace: true });
             } catch {
                 setCheckingAuth(false);
             }
         };
 
         checkAuth();
-    }, []);
+    }, [navigate]);
 
+    // ✅ FIXED handleSubmit
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!canSubmit || loading) return;
@@ -45,36 +45,33 @@ const LoginPage = () => {
         setLoading(true);
         setError("");
 
-        const handleSubmit = async (e) => {
-            e.preventDefault();
-            if (!canSubmit || loading) return;
+        try {
+            const payload = {
+                email: email.trim(),
+                password,
+                rememberMe,
+            };
 
-            setLoading(true);
-            setError("");
+            // 1️⃣ Login (sets cookies)
+            await userLogin(payload);
 
-            try {
-                const payload = {
-                    email: email.trim(),
-                    password,
-                    rememberMe,
-                };
-                await userLogin(payload);
-                await refreshAuth();
-                navigate("/dashboard", { replace: true });
+            // 2️⃣ Sync cookies → AuthContext
+            await refreshAuth();
 
-            } catch (err) {
-                const msg = err.response?.data?.message || "Login failed";
+            // 3️⃣ Navigate
+            navigate("/dashboard", { replace: true });
 
-                if (msg.toLowerCase().includes("verify")) {
-                    setError("Please verify your email before logging in.");
-                } else {
-                    setError(msg);
-                }
-            } finally {
-                setLoading(false);
+        } catch (err) {
+            const msg = err.response?.data?.message || "Login failed";
+
+            if (msg.toLowerCase().includes("verify")) {
+                setError("Please verify your email before logging in.");
+            } else {
+                setError(msg);
             }
-        };
-
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (checkingAuth) {
@@ -84,8 +81,8 @@ const LoginPage = () => {
     return (
         <>
             {error && (
-                <div className="flex items-center gap-2 text-rose-500 bg-white border border-rose-200 p-3 rounded-xl shadow-sm shadow-rose-100 animate-shake">
-                    <XCircle className="w-4 h-4 shrink-0" />
+                <div className="flex items-center gap-2 text-rose-500 bg-white border border-rose-200 p-3 rounded-xl">
+                    <XCircle className="w-4 h-4" />
                     <span className="text-xs font-semibold">{error}</span>
                 </div>
             )}
@@ -138,36 +135,33 @@ const LoginPage = () => {
                             id="remember"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
+                            className="w-4 h-4"
                         />
-                        <label htmlFor="remember" className="text-xs text-slate-500 font-medium">
+                        <label htmlFor="remember" className="text-xs text-slate-500">
                             Remember this device
                         </label>
                     </div>
 
-                    <AuthButton
-                        icon={ArrowRight}
-                        disabled={!canSubmit || loading}
-                    >
+                    <AuthButton icon={ArrowRight} disabled={!canSubmit || loading}>
                         {loading ? "Signing in..." : "Sign In"}
                     </AuthButton>
                 </form>
 
-                <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+                <div className="mt-8 text-center">
                     <p className="text-sm text-slate-500">
                         New to AmzFlow?{' '}
                         <span
-                            className="text-orange-600 font-bold hover:underline cursor-pointer"
                             onClick={() => navigate('/register')}
+                            className="text-orange-600 font-bold cursor-pointer"
                         >
                             Create account
                         </span>
                     </p>
                 </div>
 
-                <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
-                    <Lock className={`w-3 h-3 ${canSubmit ? 'text-green-500' : 'text-slate-400'}`} />
-                    <p className="text-[10px] uppercase tracking-widest font-semibold">
+                <div className="mt-6 flex items-center justify-center gap-2 text-slate-400">
+                    <Lock className="w-3 h-3" />
+                    <p className="text-[10px] uppercase tracking-widest">
                         Secure encrypted login
                     </p>
                 </div>
