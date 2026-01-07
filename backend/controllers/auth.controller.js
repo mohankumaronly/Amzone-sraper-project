@@ -131,15 +131,11 @@ const login = async (req, res) => {
 
         return res
             .cookie("accessToken", accessToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                ...cookieOptions,
                 maxAge: accessTokenMaxAge,
             })
             .cookie("refreshToken", newRefreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                ...cookieOptions,
                 maxAge: refreshTokenExpiry,
             })
             .status(200)

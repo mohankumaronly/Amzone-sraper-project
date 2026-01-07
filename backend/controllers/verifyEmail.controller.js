@@ -32,7 +32,7 @@ const verifyEmail = async (req, res) => {
     user.emailVerificationExpire = undefined;
     await user.save();
 
-   
+
     const accessToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET_KEY,
@@ -57,15 +57,11 @@ const verifyEmail = async (req, res) => {
 
     return res
       .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        ...cookieOptions,
         maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        ...cookieOptions,
         maxAge: refreshTokenExpiry,
       })
       .status(200)
@@ -74,6 +70,7 @@ const verifyEmail = async (req, res) => {
         message: "Email verified and user logged in",
         data: safeUserData,
       });
+
 
   } catch (error) {
     console.error(error);
