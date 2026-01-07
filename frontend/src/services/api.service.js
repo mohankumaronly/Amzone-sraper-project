@@ -15,3 +15,7 @@ export const userLogin = (data) => {
 export const getMe = () => {
   return api.get("/api/auth/me")
 }
+
+export const logout = () => {
+  return api.post('/api/auth/logout')
+}

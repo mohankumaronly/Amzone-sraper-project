@@ -178,26 +178,19 @@ const logOut = async (req, res) => {
         }
 
         return res
-            .clearCookie("accessToken", {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: 'lax',
-            })
-            .clearCookie("refreshToken", {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: 'lax',
-            })
+            .clearCookie("accessToken", cookieOptions)
+            .clearCookie("refreshToken", cookieOptions)
             .status(200)
             .json({
                 success: true,
-                message: "User logout successfully",
+                message: "User logged out successfully",
             });
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({
             success: false,
-            message: "Server internal error"
+            message: "Server internal error",
         });
     }
 }
