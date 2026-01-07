@@ -20,6 +20,11 @@ export const logout = () => {
   return api.post('/api/auth/logout')
 }
 
-export const forgotPassword = (data) => {
-  return api.post('/api/auth/forgot-password')
+export const forgotPassword = (email) => {
+  return api.post('/api/auth/forgot-password', {email})
 }
+
+export const resetPassword = (token, password) => {
+  return api.post(`/api/auth/reset-password/${token}`, { password });
+};
+

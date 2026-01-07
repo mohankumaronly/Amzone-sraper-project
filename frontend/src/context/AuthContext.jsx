@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -18,12 +18,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshAuth = async () => {
+    setLoading(true);
+    await fetchMe();
+  };
+
+  const logoutUser = () => {
+    setUser(null);
+  };
+
   useEffect(() => {
     fetchMe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        refreshAuth,  
+        logoutUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

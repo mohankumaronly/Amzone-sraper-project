@@ -5,12 +5,13 @@ import AuthLayout from '../Layouts/AuthLayout';
 import AuthButton from '../components/AuthButton';
 import LoadingScreen from '../components/LoadingScreen';
 import { verifyEmail } from '../services/api.service';
+import { useAuth } from '../context/AuthContext';
 
 const EmailSuccessPage = () => {
     const { token } = useParams();
     const navigate = useNavigate();
+    const { refreshAuth } = useAuth();
 
-    // 🔍 Debug logs (keep for now, remove later)
     console.log("TOKEN FROM useParams:", token);
     console.log("TOKEN LENGTH:", token?.length);
 
@@ -23,17 +24,15 @@ const EmailSuccessPage = () => {
         if (!token || calledRef.current) return;
         calledRef.current = true;
 
-        // 🔐 Normalize token (CRITICAL FIX)
         const cleanToken = decodeURIComponent(token)
             .split("?")[0]
             .trim();
 
-        console.log("CLEAN TOKEN:", cleanToken);
-        console.log("CLEAN TOKEN LENGTH:", cleanToken.length);
-
         const verify = async () => {
             try {
                 await verifyEmail(cleanToken);
+                await refreshAuth();
+                navigate("/dashboard");
             } catch (err) {
                 setError(
                     err.response?.data?.message ||
@@ -45,7 +44,8 @@ const EmailSuccessPage = () => {
         };
 
         verify();
-    }, [token]);
+    }, [token, refreshAuth, navigate]);
+
 
     if (loading) return <LoadingScreen />;
 
@@ -84,9 +84,9 @@ const EmailSuccessPage = () => {
 
                         <AuthButton
                             icon={ArrowRight}
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate('/dashboard')}
                         >
-                            Login to Dashboard
+                            Go to Dashboard
                         </AuthButton>
                     </>
                 ) : (
@@ -104,9 +104,8 @@ const EmailSuccessPage = () => {
 
                 <div className="mt-10 flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
                     <div
-                        className={`w-2 h-2 rounded-full animate-pulse ${
-                            error ? 'bg-rose-500' : 'bg-green-500'
-                        }`}
+                        className={`w-2 h-2 rounded-full animate-pulse ${error ? 'bg-rose-500' : 'bg-green-500'
+                            }`}
                     />
                     <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
                         {error ? "Verification Failed" : "Secure Connection Verified"}

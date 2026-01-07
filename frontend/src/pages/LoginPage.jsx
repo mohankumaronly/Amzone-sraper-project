@@ -6,9 +6,12 @@ import AuthButton from '../components/AuthButton';
 import { useNavigate } from 'react-router-dom';
 import LoadingScreen from '../components/LoadingScreen';
 import { getMe, userLogin } from '../services/api.service';
+import { useAuth } from "../context/AuthContext";
+
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const { refreshAuth } = useAuth();
 
     const [checkingAuth, setCheckingAuth] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -42,27 +45,36 @@ const LoginPage = () => {
         setLoading(true);
         setError("");
 
-        try {
-            const payload = {
-                email: email.trim(),
-                password,
-                rememberMe,
-            };
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            if (!canSubmit || loading) return;
 
-            await userLogin(payload);
-            navigate("/dashboard");
+            setLoading(true);
+            setError("");
 
-        } catch (err) {
-            const msg = err.response?.data?.message || "Login failed";
+            try {
+                const payload = {
+                    email: email.trim(),
+                    password,
+                    rememberMe,
+                };
+                await userLogin(payload);
+                await refreshAuth();
+                navigate("/dashboard", { replace: true });
 
-            if (msg.toLowerCase().includes("verify")) {
-                setError("Please verify your email before logging in.");
-            } else {
-                setError(msg);
+            } catch (err) {
+                const msg = err.response?.data?.message || "Login failed";
+
+                if (msg.toLowerCase().includes("verify")) {
+                    setError("Please verify your email before logging in.");
+                } else {
+                    setError(msg);
+                }
+            } finally {
+                setLoading(false);
             }
-        } finally {
-            setLoading(false);
-        }
+        };
+
     };
 
     if (checkingAuth) {

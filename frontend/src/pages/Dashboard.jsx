@@ -1,37 +1,25 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/api.service";
+import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { logoutUser } = useAuth();
 
   const handleLogout = async () => {
-    if (loading) return;
-
-    setLoading(true);
     try {
-      await logout();          
-      navigate("/login");      
+      await logout();      // backend clears cookies
+      logoutUser();        // frontend clears auth state
+      navigate("/login");  // routing now works
     } catch (err) {
       console.error("Logout failed", err);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="h-screen flex items-center justify-center flex-col space-y-3">
-      <h1 className="font-bold text-4xl">Welcome to Dashboard</h1>
-
-      <button
-        onClick={handleLogout}
-        disabled={loading}
-        className="px-5 py-3 bg-orange-500 font-bold text-white rounded-sm cursor-pointer disabled:opacity-60"
-      >
-        {loading ? "Logging out..." : "Log out"}
-      </button>
-    </div>
+    <button onClick={handleLogout}>
+      Log out
+    </button>
   );
 };
 
