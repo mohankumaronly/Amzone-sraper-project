@@ -16,80 +16,15 @@ import ProtectedRoute from "../context/ProtectedRoute";
 const AppRouters = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <PublicRoute>
-            <LandingPage />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <RegisterPage />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <LoginPage />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <ForgotPassword />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/reset-password/:token"
-        element={
-          <PublicRoute>
-            <ResetPassword />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/email-verification"
-        element={
-          <PublicRoute>
-            <EmailVerificationScreen />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/verify-email/:token"
-        element={
-          <PublicRoute>
-            <EmailSuccessPage />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      
+      <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+      <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+      <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+      <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+      <Route path="/reset-password/:token" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+      <Route path="/email-verification" element={<PublicRoute><EmailVerificationScreen /></PublicRoute>}/>
+      <Route path="/verify-email/:token" element={<PublicRoute><EmailSuccessPage /></PublicRoute>}/>
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}/>
       <Route path="*" element={<NotFoundPage />} />
-
     </Routes>
   );
 };
